@@ -1,40 +1,62 @@
 {%  extends 'base/main.html'  %}
 {% block content %}
 
-<div class"header-bar">
+<div class="header-bar">
     <div>
         <h1>Welcome {{ request.user|title }}!</h1>
         <h3 style="margin:0">You have <i>{{count}}</i> incomplete task{{ count|pluralize:"s" }}</h3>
     </div>
 
-</div>
-
-{% if request.user.is_authenticated %}
-    <p> {{ request.user.username }}</p>
+    {% if request.user.is_authenticated %}
     <form action="{% url 'logout' %}" method="post" style="display:inline;">
     {% csrf_token %}
-    <button type="submit" style="background:none;border:none;color:blue;cursor:pointer;padding:0;">Logout</button>
-</form>
-
+        <button type="submit" style="background:none;font-family: 'Nunito', sans-serif;font-size:1.3em;border:none;color:white;cursor:pointer;padding:0;">Logout</button>
+    </form>
 
     <!--<a href="{% url 'logout' %}">Logout</a>-->
-{% else %}
+    {% else %}
     <a href="{% url 'login' %}">Login</a>
 
-{% endif %}
+    {% endif %}
 
-<hr>
-<h1>My To Do List</h1>
+</div>
 
 
-<a href="{% url 'task-create' %}">Add Task</a>
 
+
+{% comment %} <a href="{% url 'task-create' %}">Add Task</a>
 <form>
     <input type="text" name="search-area" placeholder="Search" value="{{ search_input }}">
     <input type="submit" value="Search">
-</form>
+</form> {% endcomment %}
 
-<table>
+ <div class="task-items-wrapper">
+    {% for task in tasks %}
+        <div class="task-wrapper">
+            {% if task.completed %}
+            <div class="task-title">
+                <div class="task-complete-icon"></div>
+                <i><s><a href="{% url 'task-update' task.id %}"> {{task}}</a></s></i>
+            </div>
+            <a class="delete-link" href="{% url 'task-delete' task.id %}">&#215;</a>
+            {% else %}
+            <div class="task-title">
+                <div class="task-incomplete-icon"></div>
+                <a href="{% url 'task-update' task.id %}"> {{task}}</a>
+            </div>
+            <a class="delete-link" href="{% url 'task-delete' task.id %}">&#215;</a>
+            {% endif %}
+        </div>
+
+    {% empty %}
+    <h3>No items in the list.</h3>
+    {% endfor %}
+</div>
+    
+
+
+
+{% comment %} <table>
     <tr>
         <th>Item</th>
         <th></th>
@@ -52,6 +74,6 @@
     <h3>No items in the list.</h3>
     {% endfor %}
 
-</table>
+</table> {% endcomment %}
 
 {% endblock content %}
