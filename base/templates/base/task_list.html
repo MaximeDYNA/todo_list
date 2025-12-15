@@ -1,6 +1,7 @@
 {%  extends 'base/main.html'  %}
 {% block content %}
 
+<!-- Header Bar -->
 <div class="header-bar">
     <div>
         <h1>Welcome {{ request.user|title }}!</h1>
@@ -18,17 +19,19 @@
     <a href="{% url 'login' %}">Login</a>
     {% endif %}
 </div>
+<!-- End Header Bar -->
 
+<!-- Search and Add Section -->
 <div id="search-add-wrapper">
     <form method="GET" style="margin-top: 20px;display: flex;">
         <input type="text" name="search-area" placeholder="" value="{{ search_input }}">
-        <input class="button" type="submit" value="Search">
+        <input class="button" type="submit" value="Search" style="margin-left: 10px;">
     </form>
     <a id="link-add" href="{% url 'task-create' %}">&#43;</a>
 </div>
+<!-- End Search and Add Section -->
 
-
-
+<!-- Task List Section -->
 
 {% comment %} 
  {% endcomment %}
@@ -55,6 +58,7 @@
     <h3>No items in the list.</h3>
     {% endfor %}
 </div>
+<!-- End Task List Section -->
     
 
 
