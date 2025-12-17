@@ -30,5 +30,23 @@ pipeline {
                 python manage.py check'''
             }
         }
+
+         stage('Run Django Tests') {
+            steps {
+                sh '''
+                    . venv/bin/activate
+                    python manage.py test
+                '''
+            }
+        }
+    }
+
+    post {
+        failure {
+            echo '❌ Tests failed. Pipeline stopped.'
+        }
+        success {
+            echo '✅ Tests passed. CI is healthy.'
+        }
     }
 }
