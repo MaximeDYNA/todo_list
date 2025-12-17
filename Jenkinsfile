@@ -42,11 +42,22 @@ pipeline {
     }
 
     post {
-        failure {
-            echo '❌ Tests failed. Pipeline stopped.'
-        }
-        success {
-            echo '✅ Tests passed. CI is healthy.'
+        always {
+            withCredentials([string(credentialsId: 'DISCORD_WEBHOOK_URL', variable: 'DISCORD_WEBHOOK')]) {
+                sh """
+                curl -H "Content-Type: application/json" \\
+                     -X POST \\
+                     -d '{
+                       "username": "Jenkins CI",
+                       "content": "📦 **Pipeline Finished**\\n
+                       🔧 Job: ${env.JOB_NAME}\\n
+                       🔢 Build: #${env.BUILD_NUMBER}\\n
+                       📊 Status: ${currentBuild.currentResult}\\n
+                       🔗 ${env.BUILD_URL}"
+                     }' \\
+                     $DISCORD_WEBHOOK
+                """
+            }
         }
     }
 }
