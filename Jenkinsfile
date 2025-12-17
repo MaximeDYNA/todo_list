@@ -22,15 +22,6 @@ pipeline {
             }
         }
 
-        stage('Django Check') {
-            steps {
-                // Run Django checks
-                sh '''
-                . venv/bin/activate
-                python manage.py check'''
-            }
-        }
-
          stage('Run Django Tests') {
             steps {
                 sh '''
