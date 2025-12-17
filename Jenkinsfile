@@ -43,7 +43,6 @@ pipeline {
 
     post {
         always {
-            stage('Notify Discord') {
                 withCredentials([string(credentialsId: 'DISCORD_WEBHOOK_URL', variable: 'DISCORD_WEBHOOK')]) {
                     sh """
                     curl -H "Content-Type: application/json" \\
@@ -51,7 +50,6 @@ pipeline {
                         -d '{"username": "Jenkins CI","content": "📦 **Pipeline Finished**\\n🔧 Job: ${env.JOB_NAME}\\n🔢 Build: #${env.BUILD_NUMBER}\\n📊 Status: ${currentBuild.currentResult}\\n🔗 ${env.BUILD_URL}"}' \\
                         $DISCORD_WEBHOOK
                     """
-                }
             }
         }
     }
