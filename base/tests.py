@@ -1,6 +1,6 @@
 from django.test import TestCase
 from .models import Task
-from django.contrib.auth import get_user_model
+#from django.contrib.auth import get_user_model
 
 
 User = get_user_model()
