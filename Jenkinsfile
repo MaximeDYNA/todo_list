@@ -6,6 +6,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 // Checkout code from the repository
+                echo '📥 Checking out source code...'
                 git branch: 'main', 
                     url: 'https://github.com/MaximeDYNA/todo_list.git'
             }
@@ -33,6 +34,8 @@ pipeline {
 
          stage('Run Django Tests') {
             steps {
+                // Run Django tests
+                echo '🧪 Running tests...'
                 sh '''
                     . venv/bin/activate
                     python manage.py test
@@ -41,16 +44,35 @@ pipeline {
         }
     }
 
-    post {
+   post {
         always {
-                withCredentials([string(credentialsId: 'DISCORD_WEBHOOK_URL', variable: 'DISCORD_WEBHOOK')]) {
+            echo '🔔 Sending notification to Discord...'
+
+            script {
+                def payload = """{
+                    "username": "Jenkins CI",
+                    "content": "📦 **Pipeline Finished**\\n\
+                    🔧 Job: ${env.JOB_NAME}\\n\
+                    🔢 Build: #${env.BUILD_NUMBER}\\n\
+                    📊 Status: ${currentBuild.currentResult}\\n\
+                    🔗 ${env.BUILD_URL}"
+                }"""
+
+                withCredentials([
+                    string(
+                        credentialsId: 'DISCORD_WEBHOOK_URL',
+                        variable: 'DISCORD_WEBHOOK'
+                    )
+                ]) {
                     sh """
-                    curl -H "Content-Type: application/json" \\
-                        -X POST \\
-                        -d '{"username": "Jenkins CI","content": "📦 **Pipeline Finished**\\n🔧 Job: ${env.JOB_NAME}\\n🔢 Build: #${env.BUILD_NUMBER}\\n📊 Status: ${currentBuild.currentResult}\\n🔗 ${env.BUILD_URL}"}' \\
-                        $DISCORD_WEBHOOK
+                        curl -s -H 'Content-Type: application/json' \
+                             -X POST \
+                             -d '${payload}' \
+                             "\$DISCORD_WEBHOOK"
                     """
+                }
             }
-        }
+       }    
+    
     }
 }
