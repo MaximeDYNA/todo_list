@@ -52,10 +52,10 @@ pipeline {
                 def payload = """{
                     "username": "Jenkins CI",
                     "content": "📦 **Pipeline Finished**\\n\
-                    🔧 Job: ${env.JOB_NAME}\\n\
-                    🔢 Build: #${env.BUILD_NUMBER}\\n\
-                    📊 Status: ${currentBuild.currentResult}\\n\
-                    🔗 ${env.BUILD_URL}"
+🔧 Job: ${env.JOB_NAME}\\n\
+🔢 Build: #${env.BUILD_NUMBER}\\n\
+📊 Status: ${currentBuild.currentResult}\\n\
+🔗 ${env.BUILD_URL}"
                 }"""
 
                 withCredentials([
