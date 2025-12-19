@@ -57,6 +57,15 @@ pipeline {
             }
         }
 
+        stage('Run Migrations') {
+            steps {
+                echo "Running Django migrations..."
+                script {
+                    sh "docker run --rm -v $(pwd):/app ${DOCKER_IMAGE} python manage.py migrate"
+                }
+            }
+        }
+
          stage('Login to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
@@ -92,7 +101,7 @@ pipeline {
                 '''
             }
         }
-        
+
     }
 
    post {
