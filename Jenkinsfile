@@ -61,7 +61,7 @@ pipeline {
             steps {
                 echo "Running Django migrations..."
                 script {
-                    sh "docker run --rm -v $(pwd):/app ${DOCKER_IMAGE} python manage.py migrate"
+                    sh 'docker run --rm -v ' + "$(pwd):/app " + "${DOCKER_IMAGE} python manage.py migrate"
                 }
             }
         }
