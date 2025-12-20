@@ -64,18 +64,8 @@ pipeline {
             }
         }
 
-        stage('Deploy Container') {
-            steps {
-                sh """
-                docker run -d \
-                  -p 8000:8000 \
-                  --name ${CONTAINER_NAME} \
-                  ${IMAGE_NAME}
-                """
-            }
-        }
 
-         stage('Login to Docker Hub') {
+        stage('Login to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'docker-hub-credentials',
