@@ -20,7 +20,7 @@ pipeline {
             }
         }
 
-        stage('Python Environment') {
+        /*stage('Python Environment') {
             steps {
                 // Set up Python environment
                 sh '''
@@ -29,7 +29,7 @@ pipeline {
                 pip install --upgrade pip
                 pip install -r requirements.txt'''
             }
-        }
+        }*/
 
         stage('Django Check') {
             steps {
@@ -92,11 +92,12 @@ pipeline {
          stage('Deploy Container') {
             steps {
                 sh '''
-                docker stop todo-django || true
-                docker rm todo-django || true
+                docker stop $CONTAINER_NAME || true
+                docker rm $CONTAINER_NAME || true
 
                 docker run -d \
-                  --name todo-django \
+                  --name $CONTAINER_NAME \
+                  --restart unless-stopped \
                   -p 8005:8000 \
                   $DOCKER_IMAGE:$DOCKER_TAG
                 '''
