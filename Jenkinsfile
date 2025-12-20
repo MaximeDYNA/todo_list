@@ -96,7 +96,7 @@ pipeline {
 
                 docker run -d \
                   --name todo-django \
-                  -p 8000:8000 \
+                  -p 8005:8000 \
                   $DOCKER_IMAGE:$DOCKER_TAG
                 '''
             }
