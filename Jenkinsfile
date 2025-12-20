@@ -5,6 +5,8 @@ pipeline {
         // Define any environment variables here
         DOCKER_IMAGE = "maximedyna/todo-django"
         DOCKER_TAG   = "latest"
+        CONTAINER_NAME = "todo-django"
+
     }
 
     stages {
