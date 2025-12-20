@@ -57,12 +57,21 @@ pipeline {
             }
         }
 
-        stage('Run Migrations') {
+       stage('Stop Old Container') {
             steps {
-                echo "Running Django migrations..."
-                script {
-                    sh "docker run --rm -v \$(pwd):/app ${DOCKER_IMAGE} python manage.py migrate"
-                }
+                sh "docker stop ${CONTAINER_NAME} || true"
+                sh "docker rm ${CONTAINER_NAME} || true"
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                sh """
+                docker run -d \
+                  -p 8000:8000 \
+                  --name ${CONTAINER_NAME} \
+                  ${IMAGE_NAME}
+                """
             }
         }
 
