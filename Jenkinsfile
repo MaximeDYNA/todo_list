@@ -104,6 +104,13 @@ pipeline {
             }
         }
 
+        stage('Build and Deploy on Remote Server Windows 11') {
+            steps {
+                sh 'docker -H tcp://192.168.2.229:2375 pull $DOCKER_IMAGE:$DOCKER_TAG'
+                sh 'docker -H tcp://192.168.2.229:2375 run -d -p 8010:8000 $DOCKER_IMAGE:$DOCKER_TAG'
+            }
+        }
+
     }
 
    post {
