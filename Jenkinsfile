@@ -6,6 +6,10 @@ pipeline {
         DOCKER_IMAGE = "maximedyna/todo-django"
         DOCKER_TAG   = "latest"
         CONTAINER_NAME = "todo-django"
+        EC2_HOST = "34.227.221.172"
+        IMAGE = "${DOCKER_IMAGE}:${DOCKER_TAG}"
+        EC2_USER = "deploy"
+
 
     }
 
@@ -54,7 +58,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh '''
-                docker build -t $DOCKER_IMAGE:$DOCKER_TAG .
+                docker build -t ${IMAGE} .
                 '''
             }
         }
@@ -84,32 +88,67 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 sh '''
-                docker push $DOCKER_IMAGE:$DOCKER_TAG
+                docker push ${IMAGE}
                 '''
             }
         }
 
-         stage('Deploy Container') {
+         stage('Deploy to Local Vagrant VM') {
             steps {
                 sh '''
-                docker stop $CONTAINER_NAME || true
-                docker rm $CONTAINER_NAME || true
+                docker pull ${IMAGE}
+                docker stop ${CONTAINER_NAME} || true
+                docker rm ${CONTAINER_NAME} || true
 
                 docker run -d \
-                  --name $CONTAINER_NAME \
+                  --name ${CONTAINER_NAME} \
                   --restart unless-stopped \
                   -p 8005:8000 \
-                  $DOCKER_IMAGE:$DOCKER_TAG
+                  ${IMAGE}
                 '''
             }
         }
 
-        stage('Build and Deploy on Remote Server Windows 11') {
+        /*stage("Deploy to Local VM") {
+            steps {
+                sshagent(credentials: ['local-ssh']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${LOCAL_USER}@${LOCAL_VM} '
+                            docker pull ${IMAGE} &&
+                            docker stop todo-app || true &&
+                            docker rm todo-app || true &&
+                            docker run -d --name todo-app -p 8005:8000 ${IMAGE}
+                        '
+                    """
+                }
+            }
+        }*/
+
+        stage("Deploy to AWS EC2") {
+            steps {
+                sshagent(credentials: ['ec2-ssh-deploy']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=30 -o ServerAliveCountMax=4 ${EC2_USER}@${EC2_HOST}
+                            docker pull ${IMAGE} 
+                            docker stop ${CONTAINER_NAME} || true 
+                            docker rm ${CONTAINER_NAME} || true 
+                            docker run -d \
+                  --name ${CONTAINER_NAME} \
+                  --restart unless-stopped \
+                  -p 8005:8000 \
+                  ${IMAGE}
+                        
+                    '''
+                }
+            }
+        }
+
+        /*stage('Build and Deploy on Remote Server Windows 11') {
             steps {
                 sh 'docker -H tcp://192.168.2.229:2375 pull $DOCKER_IMAGE:$DOCKER_TAG'
                 sh 'docker -H tcp://192.168.2.229:2375 run -d -p 8010:8000 $DOCKER_IMAGE:$DOCKER_TAG'
             }
-        }
+        }*/
 
     }
 
