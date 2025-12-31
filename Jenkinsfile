@@ -135,7 +135,7 @@ pipeline {
                             docker run -d \
                   --name ${CONTAINER_NAME} \
                   --restart unless-stopped \
-                  -p 8005:8000 \
+                  -p 80:8000 \
                   ${IMAGE}
                         
                     '''
